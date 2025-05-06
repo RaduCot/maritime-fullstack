@@ -1,0 +1,229 @@
+<table class="w-full table-fixed bg-indigo-700 rounded-t-lg overflow-hidden">
+  <thead
+    class="bg-gray-950 text-left text-xs font-medium text-gray-300 uppercase tracking-wider select-none"
+  >
+    <tr>
+      <th
+        class="px-6 py-4 w-8 whitespace-nowrap cursor-pointer text-slate-600"
+        (click)="toggleSort('id')"
+      >
+        ID
+        <span *ngIf="sortColumn === 'id'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+      <th class="px-6 py-4 cursor-pointer" (click)="toggleSort('voyageDate')">
+        📆 Date
+        <span *ngIf="sortColumn === 'voyageDate'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+      <th
+        class="px-6 py-4 cursor-pointer"
+        (click)="toggleSort('departurePort')"
+      >
+        📍 Departure
+        <span *ngIf="sortColumn === 'departurePort'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+      <th class="px-6 py-4 cursor-pointer" (click)="toggleSort('arrivalPort')">
+        📌 Arrival
+        <span *ngIf="sortColumn === 'arrivalPort'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+      <th class="px-6 py-4 cursor-pointer" (click)="toggleSort('voyageStart')">
+        🕗 Start Time
+        <span *ngIf="sortColumn === 'voyageStart'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+      <th class="px-6 py-4 cursor-pointer" (click)="toggleSort('voyageEnd')">
+        🕔 End Time
+        <span *ngIf="sortColumn === 'voyageEnd'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+      <!-- Actions column for edit and delete buttons -->
+      <th class="px-6 py-4"></th>
+    </tr>
+  </thead>
+  <tbody
+    *ngIf="voyages?.length"
+    class="font-mono"
+    [attr.data-key]="voyages.length"
+  >
+    <tr
+      *ngFor="let voyage of voyages; let i = index"
+      class="transition-colors fade-in {{
+        i % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950'
+      }} group"
+      [style.animationDelay]="getAnimationDelay(i, voyages.length)"
+    >
+      <td class="px-6 w-8 text-sm text-slate-600 whitespace-nowrap">
+        <b>#{{ voyage.id }}</b>
+      </td>
+      <!-- Date -->
+      <td
+        class="whitespace-nowrap text-sm text-slate-400"
+        [ngClass]="{
+          'px-6': voyage.isEditing,
+          'px-4': !voyage.isEditing
+        }"
+      >
+        <div
+          class="relative inline-block rounded px-3 py-1 border-1 rounded"
+          [ngClass]="{
+            'border-slate-600': voyage.isEditing,
+            'border-transparent': !voyage.isEditing
+          }"
+        >
+          <span class="pointer-events-none block rounded">
+            {{ voyage.voyageDate | date : "EE, dd/MM/yy" }}
+          </span>
+          <input
+            *ngIf="voyage.isEditing"
+            type="date"
+            [value]="voyage.voyageDate | date : 'yyyy-MM-dd'"
+            (change)="updateVoyageDate($event, voyage, 'voyageDate')"
+            class="absolute inset-0 opacity-100 w-full h-full cursor-pointer focus:outline-none"
+          />
+        </div>
+      </td>
+
+      <!-- Departure Port -->
+      <td class="px-6 whitespace-nowrap text-sm text-slate-400">
+        <select
+          *ngIf="voyage.isEditing"
+          [(ngModel)]="voyage.departurePortId"
+          [ngClass]="{
+            'bg-gray-900 border-slate-600 focus:ring-2 focus:ring-blue-500':
+              voyage.isEditing,
+            'bg-transparent border-transparent': !voyage.isEditing
+          }"
+          class="border-1 px-2 py-1 rounded focus:outline-none"
+        >
+          <option *ngFor="let port of ports" [value]="port.id">
+            {{ port.name }}
+          </option>
+        </select>
+        <span *ngIf="!voyage.isEditing">{{
+          voyage.departurePort?.name || "Unknown"
+        }}</span>
+      </td>
+
+      <!-- Arrival Port -->
+      <td class="px-6 whitespace-nowrap text-sm text-slate-400">
+        <select
+          *ngIf="voyage.isEditing"
+          [(ngModel)]="voyage.arrivalPortId"
+          [ngClass]="{
+            'bg-gray-900 border-slate-600 focus:ring-2 focus:ring-blue-500':
+              voyage.isEditing,
+            'bg-transparent border-transparent': !voyage.isEditing
+          }"
+          class="border-1 px-2 py-1 rounded focus:outline-none"
+        >
+          <option *ngFor="let port of ports" [value]="port.id">
+            {{ port.name }}
+          </option>
+        </select>
+        <span *ngIf="!voyage.isEditing">{{
+          voyage.arrivalPort?.name || "Unknown"
+        }}</span>
+      </td>
+
+      <!-- Start Time -->
+      <td
+        class="whitespace-nowrap text-sm text-slate-400"
+        [ngClass]="{
+          'px-6': voyage.isEditing,
+          'px-4': !voyage.isEditing
+        }"
+      >
+        <div
+          class="relative inline-block rounded px-3 py-1 border-1 rounded"
+          [ngClass]="{
+            'border-slate-600': voyage.isEditing,
+            'border-transparent': !voyage.isEditing
+          }"
+        >
+          <span class="pointer-events-none block rounded">
+            {{ voyage.voyageStart | date : "dd/MM/yy, HH:mm" }}
+          </span>
+          <input
+            *ngIf="voyage.isEditing"
+            type="datetime-local"
+            [value]="voyage.voyageStart | date : 'yyyy-MM-ddTHH:mm'"
+            (change)="updateVoyageDate($event, voyage, 'voyageStart')"
+            class="absolute inset-0 opacity-100 w-full h-full cursor-pointer focus:outline-none"
+          />
+        </div>
+      </td>
+
+      <!-- End Time -->
+      <td
+        class="whitespace-nowrap text-sm text-slate-400"
+        [ngClass]="{
+          'px-6': voyage.isEditing,
+          'px-4': !voyage.isEditing
+        }"
+      >
+        <div
+          class="relative inline-block rounded px-3 py-1 border-1 rounded"
+          [ngClass]="{
+            'border-slate-600': voyage.isEditing,
+            'border-transparent': !voyage.isEditing
+          }"
+        >
+          <span class="pointer-events-none block rounded">
+            {{ voyage.voyageEnd | date : "dd/MM/yy, HH:mm" }}
+          </span>
+          <input
+            *ngIf="voyage.isEditing"
+            type="datetime-local"
+            [value]="voyage.voyageEnd | date : 'yyyy-MM-ddTHH:mm'"
+            (change)="updateVoyageDate($event, voyage, 'voyageEnd')"
+            class="absolute inset-0 opacity-100 w-full h-full cursor-pointer focus:outline-none"
+          />
+        </div>
+      </td>
+
+      <!-- Buttons for edit and delete actions -->
+      <td
+        class="px-6 py-4 whitespace-nowrap text-sm flex gap-4 items-center justify-end"
+      >
+        <app-svg-icon
+          icon="delete"
+          class="inline-block w-4 text-transparent cursor-pointer self-center fill-slate-600 hover:fill-rose-600 transition-all duration-100 ease-out opacity-0 group-hover:opacity-100"
+          (click)="onDelete(voyage.id)"
+        ></app-svg-icon>
+        <app-svg-icon
+          *ngIf="!voyage.isEditing"
+          icon="edit"
+          class="inline-block w-4 text-transparent cursor-pointer self-center fill-slate-600 hover:fill-slate-400 transition-all duration-100 ease-out opacity-0 group-hover:opacity-100"
+          (click)="toggleEdit(voyage)"
+        ></app-svg-icon>
+        <app-svg-icon
+          *ngIf="voyage.isEditing"
+          icon="check"
+          class="inline-block w-4 text-transparent cursor-pointer self-center fill-slate-600 hover:fill-green-400 transition-all duration-100 ease-out"
+          (click)="toggleEdit(voyage)"
+        ></app-svg-icon>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,41 @@
+<table class="w-full table-fixed bg-indigo-700 rounded-t-lg overflow-hidden">
+  <thead
+    class="bg-gray-950 text-left text-xs font-medium text-gray-300 uppercase tracking-wider select-none"
+  >
+    <tr>
+      <th class="px-6 py-4 w-8 whitespace-nowrap cursor-pointer text-slate-600" (click)="toggleSort('id')">
+        ID
+        <span *ngIf="sortColumn === 'id'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+      <th class="px-6 py-4 cursor-pointer" (click)="toggleSort('countryName')">
+        🌍 Country Name
+        <span class="inline-block text-gray-500 lowercase">(automatic)</span>
+        <span *ngIf="sortColumn === 'countryName'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+    </tr>
+  </thead>
+  <tbody *ngIf="countries?.length" class="font-mono" [attr.data-key]="countries.length">
+    <tr
+      *ngFor="let country of countries; let i = index"
+      class="transition-colors fade-in {{
+        i % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950'
+      }} group"
+      [style.animationDelay]="getAnimationDelay(i, countries.length)"
+    >
+      <td class="px-6 w-8 text-sm text-slate-600 whitespace-nowrap">
+        <b>#{{ country.id }}</b>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
+        {{ country.countryName }}
+      </td>
+    </tr>
+  </tbody>
+</table>

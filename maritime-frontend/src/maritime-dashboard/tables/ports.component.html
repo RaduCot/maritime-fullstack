@@ -1,0 +1,92 @@
+<table class="w-full table-fixed bg-indigo-700 rounded-t-lg overflow-hidden">
+  <thead
+    class="bg-gray-950 text-left text-xs font-medium text-gray-300 uppercase tracking-wider select-none"
+  >
+    <tr>
+      <th class="px-6 py-4 w-8 whitespace-nowrap cursor-pointer text-slate-600" (click)="toggleSort('id')">
+        ID
+        <span *ngIf="sortColumn === 'id'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+      <th class="px-6 py-4 cursor-pointer" (click)="toggleSort('name')">
+        ⚓ Port Name
+        <span *ngIf="sortColumn === 'name'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+      <th class="px-6 py-4 cursor-pointer" (click)="toggleSort('country')">
+        🌍 Country
+        <span *ngIf="sortColumn === 'country'">
+          {{
+            sortDirection === "asc" ? "↑" : sortDirection === "desc" ? "↓" : ""
+          }}
+        </span>
+      </th>
+      <!-- Actions column for edit and delete buttons -->
+      <th class="px-6 py-4"></th>
+    </tr>
+  </thead>
+  <tbody *ngIf="ports?.length" class="font-mono" [attr.data-key]="ports.length">
+    <tr
+      *ngFor="let port of ports; let i = index"
+      class="transition-colors fade-in {{
+        i % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950'
+      }} group"
+      [style.animationDelay]="getAnimationDelay(i, ports.length)"
+    >
+      <td class="px-6 w-8 text-sm text-slate-600 whitespace-nowrap">
+        <b>#{{ port.id }}</b>
+      </td>
+      <td class="px-6 whitespace-nowrap text-sm text-slate-400">
+        <input
+          type="text"
+          [(ngModel)]="port.name"
+          [readonly]="!port.isEditing"
+          [ngClass]="{
+            'border-slate-600 focus:ring-2 focus:ring-blue-500': port.isEditing,
+            'bg-transparent border-transparent': !port.isEditing
+          }"
+          class="border-1 px-2 py-1 rounded focus:outline-none"
+        />
+      </td>
+      <td class="px-6 whitespace-nowrap text-sm text-slate-400">
+        <input
+          type="text"
+          [(ngModel)]="port.country"
+          [readonly]="!port.isEditing"
+          [ngClass]="{
+            'border-slate-600 focus:ring-2 focus:ring-blue-500': port.isEditing,
+            'bg-transparent border-transparent': !port.isEditing
+          }"
+          class="border-1 px-2 py-1 rounded focus:outline-none"
+        />
+      </td>
+      <td
+        class="px-6 py-4 whitespace-nowrap text-sm flex gap-4 items-center justify-end"
+      >
+        <app-svg-icon
+          icon="delete"
+          class="inline-block w-4 text-transparent cursor-pointer self-center fill-slate-600 hover:fill-rose-600 transition-all duration-100 ease-out opacity-0 group-hover:opacity-100"
+          (click)="onDelete(port.id)"
+        ></app-svg-icon>
+        <app-svg-icon
+        *ngIf="!port.isEditing"
+        icon="edit"
+        class="inline-block w-4 text-transparent cursor-pointer self-center fill-slate-600 hover:fill-slate-400 transition-all duration-100 ease-out opacity-0 group-hover:opacity-100"
+        (click)="toggleEdit(port)"
+      ></app-svg-icon>
+      <app-svg-icon
+        *ngIf="port.isEditing"
+        icon="check"
+        class="inline-block w-4 text-transparent cursor-pointer self-center fill-slate-600 hover:fill-green-400 transition-all duration-100 ease-out"
+        (click)="toggleEdit(port)"
+      ></app-svg-icon>
+      </td>
+    </tr>
+  </tbody>
+</table>

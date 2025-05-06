@@ -1,0 +1,167 @@
+<div
+  *ngIf="isVisible"
+  class="fixed inset-0 bg-black/20 flex items-center justify-center z-50 backdrop-blur-sm"
+>
+  <div
+    class="bg-gray-900 text-gray-100 rounded-lg shadow-lg p-6 w-96 flex flex-col gap-6 border-1 border-slate-800"
+  >
+    <h2 class="text-lg text-slate-100 font-bold">Add New Data</h2>
+
+    <!-- Data Type Selector -->
+    <div class="form-group space-y-2">
+      <select
+        id="dataType"
+        class="font-mono w-full px-3 py-2 text-gray-100 bg-gray-900 border-1 border-slate-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        [(ngModel)]="selectedType"
+        (change)="onTypeChange(selectedType)"
+      >
+        <option *ngFor="let type of dataTypes" [value]="type">
+          {{ type | titlecase }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Dynamic Form -->
+    <form
+      [formGroup]="form"
+      class="form border-1 border-slate-800 p-4 rounded-lg"
+    >
+      <!-- Voyage Fields -->
+      <div *ngIf="selectedType === 'voyage'" class="space-y-2">
+        <div class="form-group space-y-2">
+          <label for="voyageDate" class="block text-sm text-slate-500"
+            >Voyage Date:</label
+          >
+          <input
+            id="voyageDate"
+            type="date"
+            formControlName="voyageDate"
+            class="font-mono w-full px-3 py-2 bg-slate-800 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <!-- Departure Port Dropdown -->
+        <div class="form-group space-y-2" *ngIf="selectedType === 'voyage'">
+          <label for="departurePortId" class="block text-sm text-slate-500"
+            >Departure Port:</label
+          >
+          <select
+            id="departurePortId"
+            formControlName="departurePortId"
+            class="font-mono w-full px-3 py-2 bg-slate-800 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option *ngFor="let port of ports" [value]="port.id">
+              {{ port.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Arrival Port Dropdown -->
+        <div class="form-group" *ngIf="selectedType === 'voyage'">
+          <label for="arrivalPortId" class="block text-sm text-slate-500"
+            >Arrival Port:</label
+          >
+          <select
+            id="arrivalPortId"
+            formControlName="arrivalPortId"
+            class="font-mono w-full px-3 py-2 bg-slate-800 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option *ngFor="let port of ports" [value]="port.id">
+              {{ port.name }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group space-y-2">
+          <label for="voyageStart" class="block text-sm text-slate-500"
+            >Voyage Start:</label
+          >
+          <input
+            id="voyageStart"
+            type="datetime-local"
+            formControlName="voyageStart"
+            class="font-mono w-full px-3 py-2 bg-slate-800 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div class="form-group space-y-2">
+          <label for="voyageEnd" class="block text-sm text-slate-500"
+            >Voyage End:</label
+          >
+          <input
+            id="voyageEnd"
+            type="datetime-local"
+            formControlName="voyageEnd"
+            class="font-mono w-full px-3 py-2 bg-slate-800 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      <!-- Ship Fields -->
+      <div *ngIf="selectedType === 'ship'" class="space-y-2">
+        <div class="form-group space-y-2">
+          <label for="name" class="block text-sm text-slate-500"
+            >Ship Name:</label
+          >
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            class="font-mono w-full px-3 py-2 bg-slate-800 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div class="form-group space-y-2">
+          <label for="maxSpeed" class="block text-sm text-slate-500"
+            >Max Speed (knots):</label
+          >
+          <input
+            id="maxSpeed"
+            type="number"
+            formControlName="maxSpeed"
+            class="font-mono w-full px-3 py-2 bg-slate-800 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      <!-- Port Fields -->
+      <div *ngIf="selectedType === 'port'" class="space-y-2">
+        <div class="form-group space-y-2">
+          <label for="name" class="block text-sm text-slate-500"
+            >Port Name:</label
+          >
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            class="font-mono w-full px-3 py-2 bg-slate-800 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div class="form-group space-y-2">
+          <label for="country" class="block text-sm text-slate-500"
+            >Country:</label
+          >
+          <input
+            id="country"
+            type="text"
+            formControlName="country"
+            class="font-mono w-full px-3 py-2 bg-slate-800 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+    </form>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-4">
+      <button
+        class="px-4 py-2 text-slate-100 bg-transparent hover:bg-slate-100 hover:text-gray-950 rounded text-sm cursor-pointer border-1 border-slate-800 transition duration-100 ease-out"
+        (click)="handleCancel()"
+      >
+        <b>Cancel</b>
+      </button>
+      <button
+        class="px-4 py-2 bg-blue-600 hover:bg-indigo-700 rounded text-sm cursor-pointer transition duration-100 ease-out"
+        [disabled]="form.invalid"
+        (click)="handleSave()"
+      >
+        <b>Save</b>
+      </button>
+    </div>
+  </div>
+</div>

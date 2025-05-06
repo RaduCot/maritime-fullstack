@@ -1,0 +1,21 @@
+# Node.js / npm
+node_modules/
+
+# Angular / front-end
+dist/
+.env
+.angular/
+
+# .NET / back-end
+bin/
+obj/
+.vs/
+.idea/
+.vscode/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Other system files
+*.log

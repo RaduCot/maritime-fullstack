@@ -1,0 +1,277 @@
+<div class="bg-gray-950 text-gray-100 animatedbg">
+  <div
+    class="lg:max-w-7xl bg-gray-950 w-full justify-self-center min-h-screen flex flex-col justify-between px-12"
+  >
+    <div class="flex flex-col">
+      <!-- Header -->
+      <header class="mx-auto w-full">
+        <div
+          class="border-b border-slate-800 py-4 flex items-center justify-between"
+        >
+          <div class="flex items-center space-x-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-8 w-8 text-blue-500"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 6.65685 16.3431 8 18 8Z"
+              ></path>
+              <path
+                d="M6 15C7.65685 15 9 13.6569 9 12C9 10.3431 7.65685 9 6 9C4.34315 9 3 10.3431 3 12C3 13.6569 4.34315 15 6 15Z"
+              ></path>
+              <path
+                d="M18 22C19.6569 22 21 20.6569 21 19C21 17.3431 19.6569 16 18 16C16.3431 16 15 17.3431 15 19C15 20.6569 16.3431 22 18 22Z"
+              ></path>
+              <path d="M8.59 13.51L15.42 17.49"></path>
+              <path d="M15.41 6.51L8.59 10.49"></path>
+            </svg>
+            <h1 class="text-xl font-bold">Maritime Data</h1>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="container mx-auto py-8 flex flex-col gap-8">
+        <div class="text-center flex flex-col items-center gap-2">
+          <h2 class="text-3xl font-bold">Maritime Database Manager</h2>
+          <p class="text-gray-400">
+            Explore ships, ports, voyages, and visited countries data
+          </p>
+        </div>
+
+        <!-- Charts -->
+        <div *ngIf="!isLoading" class="fill-gray-400 h-80 dark font-mono">
+          <!-- Voyages Chart -->
+          <ngx-charts-bar-vertical
+            *ngIf="activeTab === 'voyages'"
+            [results]="voyagesChartData"
+            [xAxis]="true"
+            [yAxis]="true"
+            [legend]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            [yAxisLabel]="'Duration (hours)'"
+            [scheme]="'cool'"
+          >
+          </ngx-charts-bar-vertical>
+
+          <!-- Ships Chart -->
+          <ngx-charts-bar-horizontal
+            *ngIf="activeTab === 'ships'"
+            [results]="shipsChartData"
+            [legend]="true"
+            [scheme]="'cool'"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showXAxisLabel]="true"
+            [xAxisLabel]="'Speed (kts)'"
+          >
+          </ngx-charts-bar-horizontal>
+
+          <!-- Ports Chart -->
+          <ngx-charts-pie-grid
+            *ngIf="activeTab === 'ports'"
+            [results]="portsChartData"
+            [label]="'Visits'"
+          >
+          </ngx-charts-pie-grid>
+
+          <!-- Countries Chart -->
+          <ngx-charts-pie-chart
+            *ngIf="activeTab === 'countries'"
+            [results]="countriesChartData"
+            [legend]="true"
+            [labels]="true"
+            [scheme]="'cool'"
+          >
+          </ngx-charts-pie-chart>
+        </div>
+
+        <div class="flex flex-row items-center justify-between">
+          <!-- Tabs -->
+          <div class="flex justify-start w-full">
+            <button
+              class="px-4 py-2 font-medium cursor-pointer"
+              [ngClass]="
+                activeTab === 'voyages'
+                  ? 'border-b-2 border-blue-500 text-slate-100'
+                  : 'border-b-2 border-transparent text-gray-400 hover:text-gray-300'
+              "
+              (click)="setActiveTab('voyages')"
+            >
+              Voyages
+            </button>
+            <button
+              class="px-4 py-2 font-medium cursor-pointer"
+              [ngClass]="
+                activeTab === 'ships'
+                  ? 'border-b-2 border-blue-500 text-slate-100'
+                  : 'border-b-2 border-transparent text-gray-400 hover:text-gray-300'
+              "
+              (click)="setActiveTab('ships')"
+            >
+              Ships
+            </button>
+            <button
+              class="px-4 py-2 font-medium cursor-pointer"
+              [ngClass]="
+                activeTab === 'ports'
+                  ? 'border-b-2 border-blue-500 text-slate-100'
+                  : 'border-b-2 border-transparent text-gray-400 hover:text-gray-300'
+              "
+              (click)="setActiveTab('ports')"
+            >
+              Ports
+            </button>
+            <button
+              class="px-4 py-2 font-medium cursor-pointer"
+              [ngClass]="
+                activeTab === 'countries'
+                  ? 'border-b-2 border-blue-500 text-slate-100'
+                  : 'border-b-2 border-transparent text-gray-400 hover:text-gray-300'
+              "
+              (click)="setActiveTab('countries')"
+            >
+              Visits in {{ currentYear - 1 }} - {{ currentYear }}
+            </button>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="flex justify-end w-full gap-4 items-end">
+            <button
+              class="w-8 h-8 font-bold text-3xl cursor-pointer bg-blue-600 text-white rounded hover:bg-indigo-700 flex items-center justify-center leading-none"
+            >
+              <span class="relative -translate-y-[2px]" (click)="showPopup()"
+                >+</span
+              >
+            </button>
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 flex items-center pointer-events-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-gray-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </div>
+              <input
+                type="text"
+                [(ngModel)]="searchTerm"
+                placeholder="Search anything..."
+                class="block w-full pl-8 py-2 bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-blue-500 placeholder-gray-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+          <svg
+            class="animate-spin h-8 w-8 text-blue-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </div>
+
+        <div *ngIf="!isLoading" class="overflow-x-auto">
+          <app-voyages-table
+            *ngIf="activeTab === 'voyages'"
+            [voyages]="getFilteredData()"
+            [sortColumn]="sortColumn"
+            [sortDirection]="sortDirection"
+            [toggleSort]="toggleSort.bind(this)"
+            [onEdit]="onEditItem.bind(this, 'voyage')"
+            [onDelete]="onDeleteItem.bind(this, 'voyage')"
+            [ports]="ports"
+          ></app-voyages-table>
+
+          <app-ships-table
+            *ngIf="activeTab === 'ships'"
+            [ships]="getFilteredData()"
+            [sortColumn]="sortColumn"
+            [sortDirection]="sortDirection"
+            [toggleSort]="toggleSort.bind(this)"
+            [onEdit]="onEditItem.bind(this, 'ship')"
+            [onDelete]="onDeleteItem.bind(this, 'ship')"
+          ></app-ships-table>
+
+          <app-ports-table
+            *ngIf="activeTab === 'ports'"
+            [ports]="getFilteredData()"
+            [sortColumn]="sortColumn"
+            [sortDirection]="sortDirection"
+            [toggleSort]="toggleSort.bind(this)"
+            [onEdit]="onEditItem.bind(this, 'port')"
+            [onDelete]="onDeleteItem.bind(this, 'port')"
+          ></app-ports-table>
+
+          <app-countries-table
+            *ngIf="activeTab === 'countries'"
+            [countries]="getFilteredData()"
+            [sortColumn]="sortColumn"
+            [sortDirection]="sortDirection"
+            [toggleSort]="toggleSort.bind(this)"
+          ></app-countries-table>
+
+          <div
+            *ngIf="!getFilteredData()?.length"
+            class="bg-gray-900 text-center py-4"
+          >
+            <p class="text-gray-600 text-sm">No data available. :(</p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-gray-500 py-4">
+      <div class="container mx-auto">
+        <div class="flex items-center justify-end gap-2 text-sm text-center">
+          &copy; {{ currentYear }}
+          <app-svg-icon
+            icon="logo"
+            class="inline-block w-5 h-5 lg:w-6 lg:h-6 text-transparent fill-rose-600"
+          />
+          <span>Cotorceanu Radu | All Rights Reserved</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <app-confirmation-modal></app-confirmation-modal>
+  <add-popup
+    [isVisible]="isPopupVisible"
+    [ports]="ports"
+    (onCancel)="hidePopup()"
+    (onSave)="handleSavePopup($event)"
+  ></add-popup>
+</div>
